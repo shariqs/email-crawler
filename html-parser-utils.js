@@ -1,5 +1,8 @@
 var cheerio = require("cheerio");
+var emailregexp = require("./email-regexp");
 var unique = require("array-unique");
+
+
 
 const LINKS_LIMIT = 20;
 
@@ -12,9 +15,9 @@ module.exports = function(htmlStr, domain) {
      * @return {array}  list of links that were found
      */
     this.extractLinks = function() {
-      // Use cheerio
-
       var $ = cheerio.load(htmlStr);
+     
+      // Tries to get links tagged with "nav". If it finds it, great! if not, tries again with the first 10 links it finds.
       var navLinks = prepareExtractedLinks($, "nav a");
       if (navLinks.length === 0) return prepareExtractedLinks($, "a");
       return navLinks;
@@ -53,7 +56,7 @@ module.exports = function(htmlStr, domain) {
      * @return {[type]} [description]
      */
     this.extractEmails = function () {
-      var emails = htmlStr.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi) || [];
+      var emails = htmlStr.match(/(\\?[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi) || [];
       return unique(emails);
     }
 
